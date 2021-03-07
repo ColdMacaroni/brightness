@@ -1,0 +1,22 @@
+#!/bin/bash
+
+var=$1
+
+# Replace with location of your own
+max_brightness=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+
+# make the value between 0 and 100
+if [ $var -gt 100 ]
+then
+	var=100
+elif [ $var -lt 0 ]
+then
+	var=0
+fi
+
+# Get percentage of the max value depending on the variable
+# Use awk for rounding
+value=$(awk -v whole=$max_brightness -v percent=$var 'BEGIN{printf("%.0f\n",whole*percent/100)}')
+
+# Echo this way to get around sudo output rerouting problems
+bash -c "echo $value > /sys/class/backlight/intel_backlight/brightness"
